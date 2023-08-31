@@ -64,13 +64,10 @@ class Article extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * Gets query for [[Comments]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getComments()
+    public function saveImage($filename)
     {
-        return $this->hasMany(Comment::class, ['article_id' => 'id']);
+        $this -> image = $filename;
+        $this -> save(false);
     }
+
 }
