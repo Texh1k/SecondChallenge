@@ -5,7 +5,8 @@ use Yii;
 use yii\base\Model;
 use yii\web\UploadedFile;
 
-class ImageUpload extends Model {
+class ImageUpload extends Model
+{
     public $image;
 
     public function rules()
@@ -20,14 +21,41 @@ class ImageUpload extends Model {
         $this -> image = $file;
         if($this -> validate())
         {
-            if(file_exists(Yii::getAlias('@web') . 'uploads/' . $currentImage))
-            {
-                unlink(Yii::getAlias('@web') . 'uploads/' . $currentImage );
-            }
-
-            $filename = strtolower(md5(uniqId($file -> baseName)) . '.' . $file ->extension);
-            $file -> saveAs(Yii :: getAlias('@web') . 'uploads/' . $filename);
-            return $filename;
+            $this -> deleteCurrentimage($currentImage);
+            return $this -> saveimage();
         }
     }
+
+private function getFolder()
+{
+    return Yii::getAlias('@web') . 'uploads/';
+}
+
+private function generateFilename()
+{
+    return strtolower(md5(uniqId($this -> image -> baseName)) . '.' . $this -> image -> extension);
+}
+
+public function deleteCurrentImage($currentImage)
+{
+    if ($this -> fileExists($currentImage))
+    {
+        unlink($this -> getFolder() . $currentImage);
+    }
+}
+
+public function fileExists($currentImage)
+{
+    if(!empty($currentImage) && $currentImage != null)
+    {
+        return file_exists($this->getFolder() . $currentImage);
+    }
+}
+
+public function saveimage()
+{
+    $filename = $this -> generateFilename();
+    $this -> image -> saveAs($this -> getFolder() . $filename);
+    return $filename;
+}
 }
